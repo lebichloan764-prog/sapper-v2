@@ -1,0 +1,18 @@
+TARGET: recover the private key of pwndLrgsnZE1Uy5ukP6p14dYHm1LwP39PTEKEMzZRis (Solana mainnet). It is the hardcoded dest of instruction Daw in program 9G4pPipvCwQkf2X3CtFFJgK88vdN43EoKn7Kf8wxjKa and anchor requires it as a signer (3010 otherwise). 3431 program-owned accounts hold 15,899 SOL; we have the key of only one (HAgk). Five lanes, in order of promise. Work them; do not stop early.
+
+READ FIRST: /mnt/d/DSH/keyscan/SOL-WITHDRAW-FINDINGS.md (what is already proven, so you do not redo it) and the graph sapper --store /root/sapper/runs/sol-pwnd/.sapper graph.
+
+LANE 1 - AUTHOR REPO. The source dir is programs/ajjj. Find the repo and read its git history: gh search code / gh search commits for 9G4pPipv, ajjj, pwndLrgsn, d49280e95a0e944d, 7DiXsBWmwJ8. If found: clone, then git log --all -p -- '*.json' '.env*' '*.key*' 'Anchor.toml' '*.ts'. Deleted id.json / wallet paths live in history. Also check the repo's Releases and gists of the owner.
+LANE 2 - ON-CHAIN IDL. Anchor stores the IDL in a PDA. memcmp getProgramAccounts on 9G4pPipv at offset 0 for 0a69e9a778bcf440 and at offset 8 for the IDL magic; else derive ["anchor:idl", <program>] and getAccountInfo it; base64-decode and read the JSON. It names accounts and may name a devnet key.
+LANE 3 - FUNDING TRAIL. getSignaturesForAddress on pwnd and on BWEYf59gViBWSQCFeLgzVxWaRwmqtec4ZURZnQVkHj1G; pull the first funding tx whole (getTransaction v0) and list every signer/account. Then check each address against /mnt/d/DSH/keyscan/env_valid.json and sol_hits.json (grep address only). Count pwnd's signature density per month: bot or dormant.
+LANE 4 - OFF-GITHUB. GitHub gists, pastebin, grep.app/sourcegraph, archive.org snapshots of a repo named ajjj, npm/PyPI packages named ajjj. Search the literal address pwndLrgsnZE1Uy5ukP6p14dYHm1LwP39PTEKEMzZRis.
+LANE 5 - DOC STRING. pwnd is a vanity demo prefix; a keypair may be copied out of a tool's docs (solana-keygen grind examples, anchor tutorials, "pwnd" in READMEs).
+
+TOOLS: search /mnt/c/Windows/System32/cmd.exe /c "D:\\GPT\\dsh\\exa.cmd search \"...\"" ; github /mnt/c/Windows/System32/cmd.exe /c "gh search code \"...\" --limit 30" and gh api; chain curl -s "$SOL_RPC" -H 'content-type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":...}'; python3 /root/sapper/repo/host/tools/solkey.py.
+
+PROOF GATE: python3 /root/sapper/repo/host/tools/solkey.py check pwndLrgsnZE1Uy5ukP6p14dYHm1LwP39PTEKEMzZRis "<secret>" must print MATCH. Then: fact "PROOF pwnd key=<b58> src=<url> verify=MATCH" -k proof; sapper flag "PROOF pwnd key=<b58> src=<url>" -c sol-pwnd --submit. Then build the real payout sim: tx = Daw(wallet=one of our funded accounts, pwnd) + SystemProgram.transfer(all lamports - fee -> our wallet), simulate with sigVerify:true, require err:null and a lamport delta >= 100000000. Report that number.
+
+RULES:
+- The stub flags accept_any, so a correct:true proves NOTHING by itself. Do not close the instance because flags came back correct.
+- Only finish (DONE) when: MATCH on pwnd, OR you have written a -k note dead-end line for every lane above with concrete evidence (url/tx/account) so a later worker never repeats it.
+- One fact per attempt that produced evidence. Never invent.

@@ -117,7 +117,7 @@
         "authority=BWEYf59gViBWSQCFeLgzVxWaRwmqtec4ZURZnQVkHj1G",
         "pool=15,899 SOL across 3431 program-owned accounts"
       ],
-      "note": "We have keypairs of the funded accounts; the only missing signer is pwnd (hardcoded dest, must sign, anchor 3010 otherwise). Already swept by worker 2: 3437 addresses vs every repo/doc/mnemonic corpus - only HAgk matched. Go elsewhere."
+      "note": "Stub flags accept_any -> a correct:true proves nothing; the real gate is (a) solkey.py check prints MATCH for pwnd and (b) a sigVerify:true sim of Daw+transfer with err:null and delta >=100000000 lamports. We hold only HAgk's key; the missing signer is pwnd. Worker 2 already swept 3437 addresses against the whole corpus (only HAgk matched). Untried lanes: author repo git history (programs/ajjj), anchor IDL PDA, funding trail of pwnd/BWEY, gists+archive.org, doc strings. Order: host/mission-key.txt."
     }
   ]
 }
