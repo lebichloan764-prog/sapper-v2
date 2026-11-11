@@ -49,6 +49,10 @@ w = sub(w,
         "  spawn <code> [--tui|--p|--scout] [--mission \"...\"] [--minutes N] [--name NAME] [--model <id>]",
         "worker: usage line")
 w = sub(w,
+        '      printf \'%s\\n\' "$addrs" > "$ROOT/$code/.addrs"',
+        '      mkdir -p "$ROOT/$code"   # the dir is only created in step 2\n      printf \'%s\\n\' "$addrs" > "$ROOT/$code/.addrs"',
+        "worker: create the target dir before writing .addrs")
+w = sub(w,
         "grep -qE '❯.*autonomous pentest operator'",
         "grep -qE '❯.*autonomous (pentest|on-chain) operator'",
         "worker: mission-wedge regex")
