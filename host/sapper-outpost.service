@@ -1,0 +1,18 @@
+[Unit]
+Description=sapper outpost — on-chain legion (commander + workers)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/root/sapper/repo/host
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.local/bin
+Environment=HOME=/root
+ExecStart=/usr/bin/bash /root/sapper/repo/host/boot.sh --minutes 240
+ExecStop=/usr/bin/bash /root/sapper/repo/host/stop.sh
+KillMode=control-group
+TimeoutStartSec=420
+
+[Install]
+WantedBy=multi-user.target
