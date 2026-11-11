@@ -75,5 +75,12 @@ d = sub(d,
         "grep -qE '\u276f.*autonomous pentest operator'",
         "grep -qE '\u276f.*autonomous (pentest|on-chain) operator'",
         "watchdog: mission-wedge regex")
+# The submitted bootstrap stays visible in the transcript, so grepping the whole
+# pane always reports "unsubmitted" and re-Enters forever. Judge only the last
+# prompt line — that is the input box.
+d = sub(d,
+        "grep -qE \"\u276f.*(SKILL\\.md|DOCTRINE\\.md)\"",
+        "awk '/\u276f/{line=$0} END{exit (line ~ /(SKILL\\.md|DOCTRINE\\.md)/ ? 0 : 1)}'",
+        "watchdog: judge the input box, not the transcript")
 D.write_text(d)
 print("done")

@@ -24,20 +24,25 @@ Tencent. Arena là server nội bộ `127.0.0.1:8899`, danh sách mục tiêu tr
 
 ## Lệnh
 
+Outpost chạy như service systemd trong WSL: tự dựng lại khi máy/WSL khởi động
+(`/etc/wsl.conf` → `[boot] command=`, và `%APPDATA%\...\Startup\outpost-up.cmd`).
+
 ```bash
 wsl
-cd ~/sapper/repo/host
-. ./env.sh
+systemctl status sapper-outpost          # đang chạy?
+systemctl restart sapper-outpost         # dựng lại sạch (giữ đồ thị + state)
+systemctl stop sapper-outpost            # dừng, giữ nguyên đồ thị
 
-bash boot.sh                      # dựng arena + session + watchdog (480 phút)
-bash board.sh                     # board chiến dịch
-bash board.sh ledger              # điểm + state + log
-tmux attach -t sapper-cmd         # xem trực tiếp (Ctrl-b d để thoát)
-bash stop.sh                      # dừng, giữ nguyên đồ thị
+cd ~/sapper/repo/host && . ./env.sh
+bash board.sh                            # board chiến dịch
+bash board.sh ledger                     # điểm + state + log
+tmux attach -t sapper-cmd                # xem trực tiếp (Ctrl-b d để thoát)
+bash boot.sh --reset                     # dựng lại bằng tay (480 phút)
+bash stop.sh                             # dừng bằng tay
 ```
 
 Thêm mục tiêu: sửa `targets.json` (code, coordinates trong `addr[]`, `note`),
-rồi `bash boot.sh --reset`.
+rồi `systemctl restart sapper-outpost`.
 
 ## Trình tự một mục tiêu
 

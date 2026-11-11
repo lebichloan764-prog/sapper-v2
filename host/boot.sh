@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
-# boot.sh — bring the outpost up: arena stub -> tmux session -> watchdog -> commander.
+# boot.sh — bring the outpost up: arena stub -> commander -> watchdog.
 #   bash ~/sapper/repo/host/boot.sh [--reset] [--minutes N]
-# --reset kills any running session/stub first.
+# --reset stops a running outpost first. Without --reset it is a no-op when up.
 set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$HERE/env.sh"
 REPO="$(dirname "$HERE")"
+WATCHDOG="$REPO/docker/commander/watchdog.sh"
+WORKER="$REPO/docker/commander/worker.sh"
 
 RESET=0
 while (( $# )); do
@@ -21,13 +23,18 @@ LOG="$SAPPER_ROOT/drive.log"
 log() { printf '[boot %s] %s\n' "$(date +%H:%M:%S)" "$*" | tee -a "$LOG"; }
 die() { log "FATAL: $*"; exit 1; }
 
-if (( RESET )); then
-  bash "$HERE/stop.sh" >/dev/null 2>&1 || true
+(( RESET )) && bash "$HERE/stop.sh" >/dev/null 2>&1
+
+# ---- 0. one outpost only ----------------------------------------------------
+if pgrep -f 'commander/watchdog\.sh$' >/dev/null 2>&1 && tmux has-session -t sapper-cmd 2>/dev/null; then
+  log "outpost already running (watchdog + session) — use --reset to rebuild"
+  exit 0
 fi
+pkill -f 'commander/watchdog\.sh$' 2>/dev/null && sleep 1
 
 # ---- 1. arena stub ----------------------------------------------------------
 if ! curl -sf --max-time 3 "$BENCHMARK_BASE_URL/health" >/dev/null 2>&1; then
-  log "starting arena stub on 127.0.0.1:8899"
+  log "starting arena stub"
   ARENA_PORT=8899 nohup python3 "$HERE/arena_stub.py" >>"$SAPPER_ROOT/arena.log" 2>&1 &
   sleep 1.5
 fi
@@ -40,9 +47,9 @@ SMOKE=$(printf 'reply with the single word: ok' | timeout 90 claude -p --model "
 [[ "$SMOKE" == *ok* ]] || die "model smoke failed (gateway $ANTHROPIC_BASE_URL, model $SAPPER_MODEL_FLASH)"
 log "model ok ($SAPPER_MODEL_FLASH)"
 
-# ---- 3. session + commander + watchdog --------------------------------------
-tmux has-session -t sapper-cmd 2>/dev/null && log "session exists (adopting)" \
-  || tmux new-session -d -s sapper-cmd -n commander || die "cannot create tmux session"
+# ---- 3. session, commander TUI, bootstrap -----------------------------------
+tmux has-session -t sapper-cmd 2>/dev/null || tmux new-session -d -s sapper-cmd -n commander \
+  || die "cannot create tmux session"
 
 CMD_HOME="$SAPPER_ROOT/commander-home"
 mkdir -p "$CMD_HOME/.claude"
@@ -58,18 +65,19 @@ d.setdefault("projects", {})[sys.argv[1]] = {
 json.dump(d, open(path, "w"))
 PYTRUST
 
-if ! tmux list-windows -t sapper-cmd -F '#W' 2>/dev/null | grep -qx commander; then
-  tmux new-window -d -t sapper-cmd -n commander
-fi
+tmux list-windows -t sapper-cmd -F '#W' 2>/dev/null | grep -qx commander \
+  || tmux new-window -d -t sapper-cmd -n commander
+
 if ! tmux capture-pane -pt sapper-cmd:commander 2>/dev/null | grep -q '❯'; then
   log "launching commander TUI (model $SAPPER_MODEL)"
   tmux respawn-pane -k -t sapper-cmd:commander \
     "cd '$CMD_HOME' && claude --model '$SAPPER_MODEL' --effort max --dangerously-skip-permissions 2>&1; echo DRIVE_PANE_EXITED; exec sleep infinity"
   waited=0
   while (( waited < 90 )); do
-    if tmux capture-pane -pt sapper-cmd:commander 2>/dev/null | grep -q '❯'; then break; fi
+    tmux capture-pane -pt sapper-cmd:commander 2>/dev/null | grep -q '❯' && break
     if tmux capture-pane -pt sapper-cmd:commander 2>/dev/null | grep -qE 'Enter to confirm|Yes, I accept'; then
-      tmux send-keys -t sapper-cmd:commander Down; sleep 0.4; tmux send-keys -t sapper-cmd:commander Enter
+      tmux send-keys -t sapper-cmd:commander Down; sleep 0.4
+      tmux send-keys -t sapper-cmd:commander Enter
     fi
     sleep 1; waited=$((waited + 1))
   done
@@ -81,25 +89,21 @@ if ! tmux capture-pane -pt sapper-cmd:commander 2>/dev/null | grep -q '❯'; the
   sleep 0.5
   tmux send-keys -t sapper-cmd:commander Enter
   log "commander bootstrap sent ($VERB)"
-  # let the TUI consume the bootstrap before the watchdog starts watching the
-  # box (otherwise it re-Enters an already-submitted prompt for nothing)
   settle=0
   while (( settle < 20 )); do
-    tmux capture-pane -pt sapper-cmd:commander 2>/dev/null | grep -qE "❯.*DOCTRINE" || break
+    tmux capture-pane -pt sapper-cmd:commander 2>/dev/null \
+      | awk '/❯/{line=$0} END{exit (line ~ /DOCTRINE/ ? 0 : 1)}' || break
     sleep 1; settle=$((settle + 1))
   done
 fi
 
-chmod +x "$REPO/docker/commander/watchdog.sh" "$REPO/docker/commander/worker.sh"
-if pgrep -f 'commander/watchdog.sh' >/dev/null 2>&1; then
-  log "watchdog already running"
-else
-  log "starting watchdog (total ${SAPPER_TOTAL_MINUTES}m)"
-  nohup "$REPO/docker/commander/watchdog.sh" >>"$LOG" 2>&1 &
-  sleep 2
-fi
-pgrep -f 'commander/watchdog.sh' >/dev/null 2>&1 || die "watchdog did not stay up (see $LOG)"
+# ---- 4. watchdog ------------------------------------------------------------
+chmod +x "$WATCHDOG" "$WORKER"
+log "starting watchdog (total ${SAPPER_TOTAL_MINUTES}m)"
+nohup "$WATCHDOG" >>"$LOG" 2>&1 &
+sleep 2
+pgrep -f 'commander/watchdog\.sh$' >/dev/null 2>&1 || die "watchdog did not stay up (see $LOG)"
 
-sleep 6
+sleep 4
 tmux list-windows -t sapper-cmd -F '#W' 2>/dev/null | sed 's/^/  window: /' | tee -a "$LOG"
-log "outpost up — attach with: tmux attach -t sapper-cmd   (board: board.sh)"
+log "outpost up — attach: tmux attach -t sapper-cmd   board: bash board.sh"

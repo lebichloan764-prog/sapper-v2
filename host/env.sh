@@ -39,3 +39,7 @@ export DISABLE_ERROR_REPORTING=1
 export DISABLE_AUTOUPDATER=1
 export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 export SAPPER_RETRY_MODEL="${SAPPER_RETRY_MODEL:-3}"
+
+# ---- worker.sh gateway names (ds = LINE tier on the same yeta gateway) ------
+export DEEPSEEK_BASE_URL="${DEEPSEEK_BASE_URL:-https://platform.yeta.ai}"
+export DEEPSEEK_API_KEY="${DEEPSEEK_API_KEY:-$ANTHROPIC_AUTH_TOKEN}"
