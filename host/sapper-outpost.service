@@ -1,0 +1,21 @@
+[Unit]
+Description=sapper outpost — on-chain legion (commander + workers)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/sapper/repo/host
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.local/bin
+Environment=HOME=/root
+# boot.sh exits once the post is up; the trailing sleep is the main process that
+# keeps the unit — and its whole cgroup of workers — alive.
+ExecStart=/usr/bin/bash -c '/usr/bin/bash /root/sapper/repo/host/boot.sh --minutes 240; exec /usr/bin/sleep infinity'
+ExecStop=/usr/bin/bash /root/sapper/repo/host/stop.sh
+Restart=on-failure
+RestartSec=20
+KillMode=control-group
+TimeoutStartSec=420
+
+[Install]
+WantedBy=multi-user.target
