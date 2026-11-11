@@ -1,0 +1,31 @@
+{
+  "active": [
+    "firm-e32a",
+    "firm-80c6",
+    "morpho-cbxrp",
+    "sol-pwnd"
+  ],
+  "closed": [
+    "silo-base"
+  ],
+  "score": {
+    "firm-80c6": {
+      "correct": 1,
+      "submit": [
+        {
+          "flag": "FORK PASS firm-80c6 | fork block 26391074 (anvil, eth.drpc.org, market 0x4E264618dC015219CD83dbc53B31251D73c2db1a) | oracle 0xabe146cf570fd27ddd985895ce9b138a7110cce8 feed overridden to mock 0x7eD3c5f",
+          "correct": true,
+          "at": 1794394365
+        }
+      ]
+    }
+  },
+  "submitted": [
+    {
+      "code": "firm-80c6",
+      "flag": "FORK PASS firm-80c6 | fork block 26391074 (anvil, eth.drpc.org, market 0x4E264618dC015219CD83dbc53B31251D73c2db1a) | oracle 0xabe146cf570fd27ddd985895ce9b138a7110cce8 feed overridden to mock 0x7eD3c5f",
+      "correct": true,
+      "at": 1794394365
+    }
+  ]
+}

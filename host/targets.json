@@ -1,0 +1,123 @@
+{
+  "max_active": 5,
+  "_comment": "Local arena target list. Each target is one on-chain objective. addr[] are the coordinates handed to workers. accept_any=true scores any submitted PROOF string (fork hash / tx hash / PASS line).",
+  "targets": [
+    {
+      "code": "firm-e32a",
+      "title": "FiRM b427 position 0xe32a (99.759% of threshold)",
+      "difficulty": "medium",
+      "budget_min": 45,
+      "accept_any": true,
+      "flag_count": 2,
+      "addr": [
+        "chain=mainnet",
+        "market=0x5292...0xb427fC22561f3963B04202F9bb5BCEbd76c14A99",
+        "borrower=0x3CdFd2E8Bc356054646Cb2C91046c98BE1a8ed61",
+        "position=0xe32a8CF93AF8661Ec4708ef627b255801184ad2f",
+        "debt=286000 DOLA",
+        "collateral=286689.9 DOLA-equiv",
+        "gap=689 DOLA to threshold"
+      ],
+      "note": "PROOF = fork replay of liquidate() on the pinned block, own-wallet delta > 0. Harness already deployed 0x53D26e0F88c5D445Ce376E7E178Ddb170f3B9b78. Never fire on mainnet before the fork replay prints PASS."
+    },
+    {
+      "code": "firm-80c6",
+      "title": "FiRM b427 position 0x80C6 (99.723%)",
+      "difficulty": "medium",
+      "budget_min": 30,
+      "accept_any": true,
+      "flag_count": 1,
+      "addr": [
+        "chain=mainnet",
+        "market=0x4E264618dC015219CD83dbc53B31251D73c2db1a",
+        "borrower=0x3CdFd2E8Bc356054646Cb2C91046c98BE1a8ed61",
+        "position=0x80C6 (see runs/firm-80c6 graph)"
+      ],
+      "note": "Second-closest FiRM position. Re-verify the position address from the graph before pricing."
+    },
+    {
+      "code": "aave-cfd2",
+      "title": "Aave V3 Base 0xcfd2 HF 1.0324",
+      "difficulty": "hard",
+      "budget_min": 40,
+      "accept_any": true,
+      "flag_count": 2,
+      "addr": [
+        "chain=base",
+        "pool=0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
+        "borrower=0xcfd2f32E6d533653cEd5Ba7E5fe1a76C3c626757",
+        "debt=271270 USD",
+        "collateral=294794 USD",
+        "threshold=95%",
+        "trigger=HF < 1.0 (collateral must fall 3.14%)"
+      ],
+      "note": "No watcher exists yet. PROOF = fork at latest Base block, warp the collateral price down 3.2%, run liquidationCall, own-wallet delta > 0, gas measured."
+    },
+    {
+      "code": "morpho-cbxrp",
+      "title": "Morpho Base cbXRP/USDC markets (watch)",
+      "difficulty": "medium",
+      "budget_min": 30,
+      "accept_any": true,
+      "flag_count": 1,
+      "addr": [
+        "chain=base",
+        "morpho=0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+        "market=0xd4a903dc6d949519060c7707f9604fdc9772c046e05c2e3a8fce0bd7196e4109",
+        "idle_usdc=10196548"
+      ],
+      "note": "Healthy positions ~+4-6%. Look for the closest one and price the gap in oracle terms, not spot."
+    },
+    {
+      "code": "morpho-usr",
+      "title": "Morpho Base USR/USDC bad debt (long shot)",
+      "difficulty": "hard",
+      "budget_min": 25,
+      "accept_any": true,
+      "flag_count": 1,
+      "addr": [
+        "chain=base",
+        "market=0xff0f2bd52ca786a4f8149f96622885e880222d8bed12bbbf5950296be8d03f89",
+        "borrow=64016936 USDC",
+        "collateral=1368720 USR",
+        "oracle=1.00009",
+        "spot=0.03485"
+      ],
+      "note": "64 positions, oracle 29x spot. PROOF must state profit only if the collateral can actually be sold at oracle; otherwise record the loss number."
+    },
+    {
+      "code": "silo-base",
+      "title": "Silo Base — unscanned protocol",
+      "difficulty": "hard",
+      "budget_min": 35,
+      "accept_any": true,
+      "flag_count": 1,
+      "addr": [
+        "chain=base",
+        "todo=discover Silo markets, find the Borrow event signature, enumerate borrowers, measure health"
+      ],
+      "note": "Recon target. PROOF = at least one borrower measured with per-asset health, or a written 'no borrower under threshold' verdict with counts."
+    },
+    {
+      "code": "sol-pwnd",
+      "title": "SOL nonce bounty — private key of `pwnd` (withdraw signer)",
+      "difficulty": "hard",
+      "budget_min": 60,
+      "accept_any": true,
+      "flag_count": 2,
+      "addr": [
+        "chain=solana-mainnet",
+        "case=D:/DSH/keyscan/CASE-NONCE-BOUNTY.md + SOL-WITHDRAW-FINDINGS.md",
+        "tools=D:/DSH/keyscan (read-only, worker 2's scripts + corpus)",
+        "program1=7DiXsBWmwJ8WQZdgoyyic1wh5FGtib3Xe8vtfugSwhXG (no-op, any data accepted)",
+        "program2=9G4pPipvCwQkf2X3CtFFJgK88vdN43EoKn7Kf8wxjKa (anchor, real withdraw = Daw)",
+        "watched-account=GmaDrppBC7P5ARKV8g3djiwP89vz1jLK23V2GBjuAEGB",
+        "HAgk=HAgk14JpMQLgt6rVgv7cBQFJWFto5Dqxi472uT3DKpqk (2.567 SOL, key found)",
+        "missing-key=pwndLrgsnZE1Uy5ukP6p14dYHm1LwP39PTEKEMzZRis",
+        "authority=BWEYf59gViBWSQCFeLgzVxWaRwmqtec4ZURZnQVkHj1G",
+        "pool=15,899 SOL across 3431 program-owned accounts"
+      ],
+      "note": "We have keypairs of the funded accounts; the only missing signer is pwnd (hardcoded dest, must sign, anchor 3010 otherwise). Already swept by worker 2: 3437 addresses vs every repo/doc/mnemonic corpus - only HAgk matched. Go elsewhere."
+    }
+  ]
+}
