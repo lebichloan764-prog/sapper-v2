@@ -24,8 +24,11 @@ Tencent. Arena là server nội bộ `127.0.0.1:8899`, danh sách mục tiêu tr
 
 ## Lệnh
 
-Outpost chạy như service systemd trong WSL: tự dựng lại khi máy/WSL khởi động
-(`/etc/wsl.conf` → `[boot] command=`, và `%APPDATA%\...\Startup\outpost-up.cmd`).
+Outpost chạy như service systemd trong WSL và tự dựng lại sau restart:
+`/etc/wsl.conf` có `[boot] command=` (chạy mỗi lần WSL khởi động) và
+`%APPDATA%\...\Startup\outpost-up.cmd` giữ một nhịp 30 giây để WSL không tự tắt
+khi máy rảnh (WSL mặc định tắt distro sau ~60 giây không hoạt động — tắt distro
+là mất mọi pane đang chạy). `.wslconfig` cũng đã nâng `vmIdleTimeout`.
 
 ```bash
 wsl
