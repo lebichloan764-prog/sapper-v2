@@ -20,6 +20,8 @@ CTF flag — targets with accept_any score any submission as correct.
 """
 import json
 import os
+import re
+import subprocess
 import sys
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -61,6 +63,30 @@ def state():
     st.setdefault("score", {})
     st.setdefault("submitted", [])
     return st
+
+
+
+def solkey_verdict(t, flag):
+    """A target may gate on a real key: {"solkey": "<address>"}. The submitted
+    flag must carry key=<secret> (base58, JSON array or hex) and the offline
+    ed25519 check must print MATCH. Returns None when the target has no gate."""
+    gate = t.get("solkey")
+    if not gate:
+        return None
+    gates = gate if isinstance(gate, list) else [gate]
+    m = re.search(r"key=([1-9A-HJ-NP-Za-km-z]{32,100}|\[[0-9,\s]+\]|[0-9a-fA-F]{64,128})", flag)
+    if not m:
+        return False
+    for g in gates:
+        try:
+            out = subprocess.run(
+                [sys.executable, os.path.join(HERE, "tools", "solkey.py"), "check", g, m.group(1).strip()],
+                capture_output=True, text=True, timeout=25).stdout
+        except Exception:
+            continue
+        if out.strip().startswith("MATCH"):
+            return True
+    return False
 
 
 def challenge_row(code, t, st):
@@ -161,7 +187,11 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send_err(400, "bad_request", "need unique_code + flag")
             t = tg[code]
             rec = st["score"].setdefault(code, {"correct": 0, "submit": []})
-            correct = True if t.get("accept_any") else flag in (t.get("flags") or [])
+            verdict = solkey_verdict(t, flag)
+            if verdict is None:
+                correct = True if t.get("accept_any") else flag in (t.get("flags") or [])
+            else:
+                correct = verdict
             if correct and flag not in rec["submit"]:
                 rec["correct"] += 1
             rec["submit"].append({"flag": flag[:200], "correct": correct, "at": int(time.time())})

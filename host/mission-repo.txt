@@ -1,0 +1,14 @@
+SCOUT (short shift). One lane only: find the AUTHOR SOURCE of Solana program 9G4pPipvCwQkf2X3CtFFJgK88vdN43EoKn7Kf8wxjKa (workspace programs/ajjj) and mine its git history for a committed-then-deleted keypair. No chain RPC work — another worker owns that.
+
+The prize: private key of pwndLrgsnZE1Uy5ukP6p14dYHm1LwP39PTEKEMzZRis. Verify any candidate:
+  python3 /root/sapper/repo/host/tools/solkey.py check pwndLrgsnZE1Uy5ukP6p14dYHm1LwP39PTEKEMzZRis "<secret>"   -> must print MATCH
+then sapper fact "PROOF pwnd key=<b58> src=<url> verify=MATCH" -k proof.
+
+Search rows, all through /mnt/c/Windows/System32/cmd.exe /c "gh ..." (gh is authed):
+1. gh search code "9G4pPipv" --limit 30 ; gh search code "pwndLrgsn" ; gh search code "ajjj" --limit 30 ; gh search code "d49280e95a0e944d" ; gh search commits "ajjj solana" ; gh search repos "ajjj anchor solana".
+2. Any hit: gh api repos/<owner>/<repo>/git/trees/<sha>?recursive=1 to list ALL files; look for *.json id files, Anchor.toml, .env*, keypair, deploy, docs.
+3. Clone it under /root/sapper/runs/sol-pwnd/repo-<n> and run: git log --all --oneline | head -50 ; git log --all -p -- '*.json' '.env*' '*.key*' 'Anchor.toml' '*.ts' | grep -n -E "^[+-].*(secretKey|\[[0-9]{1,3},|pwnd)" | head -40 ; git show <sha>:<path> for deleted files.
+4. Also: gh api users/<owner>/gists ; archive.org snapshot of the repo (curl "http://archive.org/wayback/available?url=github.com/<owner>/<repo>") ; exa search for the literal address and for "ajjj" anchor.
+5. Record every dead end: sapper fact "<repo|url|sha>: <what it showed>" -k note.
+
+Read the graph first: sapper --store /root/sapper/runs/sol-pwnd/.sapper graph. Do not reply DONE without either a MATCH or notes for each row above. Never invent a key.

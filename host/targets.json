@@ -103,8 +103,8 @@
       "title": "SOL nonce bounty — private key of `pwnd` (withdraw signer)",
       "difficulty": "hard",
       "budget_min": 60,
-      "accept_any": true,
-      "flag_count": 2,
+      "accept_any": false,
+      "flag_count": 1,
       "addr": [
         "chain=solana-mainnet",
         "case=D:/DSH/keyscan/CASE-NONCE-BOUNTY.md + SOL-WITHDRAW-FINDINGS.md",
@@ -117,7 +117,11 @@
         "authority=BWEYf59gViBWSQCFeLgzVxWaRwmqtec4ZURZnQVkHj1G",
         "pool=15,899 SOL across 3431 program-owned accounts"
       ],
-      "note": "Stub flags accept_any -> a correct:true proves nothing; the real gate is (a) solkey.py check prints MATCH for pwnd and (b) a sigVerify:true sim of Daw+transfer with err:null and delta >=100000000 lamports. We hold only HAgk's key; the missing signer is pwnd. Worker 2 already swept 3437 addresses against the whole corpus (only HAgk matched). Untried lanes: author repo git history (programs/ajjj), anchor IDL PDA, funding trail of pwnd/BWEY, gists+archive.org, doc strings. Order: host/mission-key.txt."
+      "note": "Stub flags accept_any -> a correct:true proves nothing; the real gate is (a) solkey.py check prints MATCH for pwnd and (b) a sigVerify:true sim of Daw+transfer with err:null and delta >=100000000 lamports. We hold only HAgk's key; the missing signer is pwnd. Worker 2 already swept 3437 addresses against the whole corpus (only HAgk matched). Untried lanes: author repo git history (programs/ajjj), anchor IDL PDA, funding trail of pwnd/BWEY, gists+archive.org, doc strings. Order: host/mission-key.txt.",
+      "solkey": [
+        "pwndLrgsnZE1Uy5ukP6p14dYHm1LwP39PTEKEMzZRis",
+        "BWEYf59gViBWSQCFeLgzVxWaRwmqtec4ZURZnQVkHj1G"
+      ]
     }
   ]
 }

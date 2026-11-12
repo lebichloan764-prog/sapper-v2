@@ -1,0 +1,20 @@
+Two jobs. (1) is a proof we can produce NOW with keys we already have; (2) is the missing key. Do not stop for a write-up, do not close anything.
+
+FACTS YOU MUST NOT REDISCOVER (all verified):
+- The three program1 accounts GmaDrppBC7P5ARKV8g3djiwP89vz1jLK23V2GBjuAEGB, J2xccRtuG43drESLYznHhLhQkLTdfepcKYbiQ9BsJVaf, GyGKxMyg1p9SsHfm15MkNUu1u9TN2JtTspcdmrtGUdse are funded fixtures whose seeds are PUBLISHED: bytes([7])*32, bytes([9])*32, bytes([3])*32 (JSON [7,7,...]). Checked MATCH with tools/solkey.py. Total 2,74 SOL.
+- Program 1 moves lamports on this path only: accounts[0] must equal BWEYf59gViBWSQCFeLgzVxWaRwmqtec4ZURZnQVkHj1G AND have the is_signer flag; accounts[1] must be owned by program 1; then accounts[1].lamports -= D and accounts[0].lamports += D where D = u64 LE at data offset 4 (data = 4-byte prefix + u64 amount; the stranger's tx used [2,0,0,0,0,128,201,107,0,0,0,0] = 1.809.885.184 lamports). The binary has NO signature-verify syscall — it trusts only the is_signer flag.
+- So: with sigVerify:false the path runs with a fake 64-zero signature. With BWEY's real key it runs for real (sigVerify:true) and can be broadcast.
+
+JOB 1 — PROVE THE DRAIN (deliverable, ~now):
+Build a legacy tx: recent blockhash, fee payer = a throwaway keypair we generate, ix = program 1 with accounts [BWEY (signer, writable), GyGKxMyg1p9SsHfm15MkNUu1u9TN2JtTspcdmrtGUdse (writable), SystemProgram], data = 4 zero bytes + u64 LE of an amount (test the full balance minus rent first, then a smaller one). Simulate via simulateTransaction with sigVerify:false, replaceRecentBlockhash:false. Require: err null, accounts[1] lamport delta <= -100000000, accounts[0] delta +same, and accounts[1] owner reads 11111111111111111111111111111111 afterwards. Repeat on GmaDrpp and J2xcc. Then try the SAME tx with sigVerify:true and a real signature over it to record exactly what fails (expect SignatureFailure) — that is the honest limit, record it as evidence.
+Record: sapper fact "SIM DRAIN <account>: delta <n> lamports, err null, owner->111…, sigVerify:false" -k proof with the simulate response hash/recent-blockhash. Submit one flag line if useful.
+RPC: $SOL_RPC (curl JSON-RPC) or python+base64. Helper for keys: solana-keygen may be absent — derive keypair bytes → ed25519 public key with python cryptography and build the message/signature yourself if needed; the program1 sim does not need a valid signature, only the pubkey.
+
+JOB 2 — THE MISSING KEYS (hunt): needed are pwndLrgsnZE1Uy5ukP6p14dYHm1LwP39PTEKEMzZRis (dest of program2 Daw, unlocks 15.899 SOL) and BWEYf59gViBWSQCFeLgzVxWaRwmqtec4ZURZnQVkHj1G (program1 authority, unlocks the 3 fixtures for REAL and holds 0,756 SOL). Both on-curve vanity. Lanes still open, cheapest first:
+- BWEY: it is the deployer/upgrade authority — its txs are the deploy of BOTH programs and the initialize txs. Pull its full signature history and read every tx: a deployer wallet is often an operator machine key, not a vanity; check whether BWEY appears in any repo/docs of whoever built this, and whether it paid rent for programdata PDAs. Also check getAccountInfo on the programdata PDAs for an upgrade-authority trail.
+- pay-kit already exhausted (11012 blobs, 43911 candidates) — do not redo it. But the fixture-seed pattern means the AUTHOR rehearses with published vectors: check the pay-kit and solana-foundation sibling repos for a "pwnd"/"bwey"-looking seed, and check whether pwnd equals fill(n) or a published vector from any repo (one line: try all 256 single-byte seeds + all [n]*32 for n 0..255 against pwnd and BWEY).
+- Then the other lanes: deque repo search by literal address, gist/pastebin/archive.org, npm/PyPI.
+
+GATE (real, enforced by the scorer): flag must be PROOF key=<secret> ... where the secret verifies MATCH against pwnd OR BWEY via tools/solkey.py. Junk and HAgk/gma keys are rejected.
+
+RULES: read sapper --store /root/sapper/runs/sol-pwnd/.sapper graph first; one -k note per dead end with the url/tx/account; never invent; keep going until the shift deadline — do not reply DONE on your own judgement if the gate is still 0/1, the commander needs the notes.

@@ -1,12 +1,13 @@
 {
-  "active": [
-    "firm-e32a",
-    "firm-80c6",
-    "morpho-cbxrp",
-    "sol-pwnd"
-  ],
+  "active": [],
   "closed": [
-    "silo-base"
+    "silo-base",
+    "firm-80c6",
+    "firm-e32a",
+    "aave-cfd2",
+    "morpho-cbxrp",
+    "morpho-usr",
+    "sol-pwnd"
   ],
   "score": {
     "firm-80c6": {
@@ -18,6 +19,61 @@
           "at": 1794394365
         }
       ]
+    },
+    "firm-e32a": {
+      "correct": 2,
+      "submit": [
+        {
+          "flag": "FORK PASS firm-e32a | fork block 26391076 | tx 0xd8f904a8ddd7898747a1f0608f87a00970e16daa89aecb8f4847ca34fb4c6e88 status=1 | liquidate(0xe32a8CF93AF8661Ec4708ef627b255801184ad2f,286000e18) market 0x52",
+          "correct": true,
+          "at": 1794395442
+        },
+        {
+          "flag": "BOUNDARY FORK PASS firm-e32a | fork block 26391264 | tx 0x9182f5ae59c5678984af2c0049ca5b510e80e9ec9ae25a31ce13c094dc798acc status=1 | price 997763682022709484 = p_liq MINUS 1 wei, creditLimit 28599999",
+          "correct": true,
+          "at": 1794395553
+        }
+      ]
+    },
+    "morpho-cbxrp": {
+      "correct": 1,
+      "submit": [
+        {
+          "flag": "FORK PASS morpho-cbxrp (Base, Morpho Blue 0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb). Pinned fork block 56024102 (oracle forced to 1.0335e36 < p_liq 1.0335714e36; real oracle 1.06191e36, gap 2.6686%)",
+          "correct": true,
+          "at": 1794396182
+        }
+      ]
+    },
+    "aave-cfd2": {
+      "correct": 2,
+      "submit": [
+        {
+          "flag": "PROOF base@56027839 tx=0xefc58d62c07ac06c7704702947090fbebb48d17d19561167e943ada4abb3622f delta=+1189349795479626311 wei gas=355139 dist=3.234% | AaveV3 Base pool 0xA238Dd80...d1c5 borrower 0xcfd2f32E",
+          "correct": true,
+          "at": 1794396448
+        },
+        {
+          "flag": "PROOF base@56029676 tx=0x8fc34cd321df9ce7812bd7beb0fac7c9bdb9cc59abfc299dd902c41f8bbe54bf delta=+1189350064491731263 wei gas=355139 dist=3.234% | independent re-run on fresh fork, same pool 0xA238Dd80",
+          "correct": true,
+          "at": 1794396449
+        }
+      ]
+    },
+    "morpho-usr": {
+      "correct": 2,
+      "submit": [
+        {
+          "flag": "PROOF morpho-usr (Base Morpho Blue 0xBBBB...FFCb) shape B honest bad-debt. Fork block 56036622 hash 0xfd2f7c7313c3c3a00cf0f419f23aa395cc1eb1d381215a6a9bebf4eb1aed4cdb ts 1794397700; oracle 0xa40E4a5C4",
+          "correct": true,
+          "at": 1794398325
+        },
+        {
+          "flag": "PROOF morpho-usr (Base, Morpho Blue 0xBBBB...FFCb), shape B: honest bad-debt number. Fork block 56036622 (hash 0xfd2f7c7313c3c3a00cf0f419f23aa395cc1eb1d381215a6a9bebf4eb1aed4cdb, ts 1794397700), anvil",
+          "correct": true,
+          "at": 1794399005
+        }
+      ]
     }
   },
   "submitted": [
@@ -26,6 +82,48 @@
       "flag": "FORK PASS firm-80c6 | fork block 26391074 (anvil, eth.drpc.org, market 0x4E264618dC015219CD83dbc53B31251D73c2db1a) | oracle 0xabe146cf570fd27ddd985895ce9b138a7110cce8 feed overridden to mock 0x7eD3c5f",
       "correct": true,
       "at": 1794394365
+    },
+    {
+      "code": "firm-e32a",
+      "flag": "FORK PASS firm-e32a | fork block 26391076 | tx 0xd8f904a8ddd7898747a1f0608f87a00970e16daa89aecb8f4847ca34fb4c6e88 status=1 | liquidate(0xe32a8CF93AF8661Ec4708ef627b255801184ad2f,286000e18) market 0x52",
+      "correct": true,
+      "at": 1794395442
+    },
+    {
+      "code": "firm-e32a",
+      "flag": "BOUNDARY FORK PASS firm-e32a | fork block 26391264 | tx 0x9182f5ae59c5678984af2c0049ca5b510e80e9ec9ae25a31ce13c094dc798acc status=1 | price 997763682022709484 = p_liq MINUS 1 wei, creditLimit 28599999",
+      "correct": true,
+      "at": 1794395553
+    },
+    {
+      "code": "morpho-cbxrp",
+      "flag": "FORK PASS morpho-cbxrp (Base, Morpho Blue 0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb). Pinned fork block 56024102 (oracle forced to 1.0335e36 < p_liq 1.0335714e36; real oracle 1.06191e36, gap 2.6686%)",
+      "correct": true,
+      "at": 1794396182
+    },
+    {
+      "code": "aave-cfd2",
+      "flag": "PROOF base@56027839 tx=0xefc58d62c07ac06c7704702947090fbebb48d17d19561167e943ada4abb3622f delta=+1189349795479626311 wei gas=355139 dist=3.234% | AaveV3 Base pool 0xA238Dd80...d1c5 borrower 0xcfd2f32E",
+      "correct": true,
+      "at": 1794396448
+    },
+    {
+      "code": "aave-cfd2",
+      "flag": "PROOF base@56029676 tx=0x8fc34cd321df9ce7812bd7beb0fac7c9bdb9cc59abfc299dd902c41f8bbe54bf delta=+1189350064491731263 wei gas=355139 dist=3.234% | independent re-run on fresh fork, same pool 0xA238Dd80",
+      "correct": true,
+      "at": 1794396449
+    },
+    {
+      "code": "morpho-usr",
+      "flag": "PROOF morpho-usr (Base Morpho Blue 0xBBBB...FFCb) shape B honest bad-debt. Fork block 56036622 hash 0xfd2f7c7313c3c3a00cf0f419f23aa395cc1eb1d381215a6a9bebf4eb1aed4cdb ts 1794397700; oracle 0xa40E4a5C4",
+      "correct": true,
+      "at": 1794398325
+    },
+    {
+      "code": "morpho-usr",
+      "flag": "PROOF morpho-usr (Base, Morpho Blue 0xBBBB...FFCb), shape B: honest bad-debt number. Fork block 56036622 (hash 0xfd2f7c7313c3c3a00cf0f419f23aa395cc1eb1d381215a6a9bebf4eb1aed4cdb, ts 1794397700), anvil",
+      "correct": true,
+      "at": 1794399005
     }
   ]
 }
